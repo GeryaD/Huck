@@ -7,7 +7,7 @@ from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
 from starlette.middleware.cors import CORSMiddleware
 
-from src.api.v1 import user_router
+from src.api.v1 import user_router, history_router
 from src.core import settings
 from src.core.middleware.process_time import ProcessTimeMiddleware
 from src.core.middleware.token_pass import PassByTokenMiddleware
@@ -26,7 +26,7 @@ async def ping_pong():
 
 # Adding routers
 routers: list[APIRouter] = [
-    # doc_router,
+    history_router,
     user_router,
 ]
 for router in routers:

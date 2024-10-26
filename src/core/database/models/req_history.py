@@ -11,7 +11,7 @@ class RequestHistory(Base):
     __tablename__ = "request_history"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    uuid_user = Column(VARCHAR(length=36), nullable=False, unique=True)
+    uuid_user = Column(VARCHAR(length=36), nullable=False)
     name = Column(VARCHAR(length=255), nullable=False)
     url_card = Column(TEXT, nullable=False)
     url_img = Column(TEXT, nullable=False)
