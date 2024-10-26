@@ -5,6 +5,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from redis import asyncio as aioredis
+from starlette.middleware.cors import CORSMiddleware
 
 from src.api.v1 import user_router
 from src.core import settings
@@ -48,7 +49,13 @@ for route in app.router.__dict__["routes"]:
 app.add_middleware(ProcessTimeMiddleware)
 app.add_middleware(PassByTokenMiddleware, pass_uri=pass_uri)
 app.add_middleware(GZipMiddleware)
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Разрешить все источники
+    allow_credentials=True,
+    allow_methods=["*"],  # Разрешить все методы (GET, POST, OPTIONS и т. д.)
+    allow_headers=["*"],  # Разрешить все заголовки
+)
 
 # Adding caching
 @asynccontextmanager
