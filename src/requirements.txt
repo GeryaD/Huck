@@ -1,0 +1,11 @@
+alembic==1.13.2
+aiomysql==0.2.0
+bcrypt==4.2.0
+email_validator==2.2.0
+fastapi==0.115.0
+fastapi_cache2[redis]==0.2.2
+pydantic_settings==2.5.2
+pyjwt==2.9.0
+python-multipart==0.0.10
+sqlalchemy[asyncio]==2.0.35
+cryptography

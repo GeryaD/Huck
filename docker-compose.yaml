@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: fastapi_app
+    build: .
+    ports:
+      - "8888:8000"
+    command: bash -c "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --reload"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.4
+    container_name: db_app
+    env_file:
+      - .env
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: myadmin_app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    links:
+      - db
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      PMA_HOST: localhost
+
+  redis:
+    image: redis:7
+    container_name: redis_app
+    env_file:
+      - .env
+    command: --port ${REDIS_PORT}
+    expose:
+      - ${REDIS_PORT}
+
+
