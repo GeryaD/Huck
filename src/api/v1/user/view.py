@@ -34,7 +34,7 @@ router = APIRouter(prefix="/user", tags=["User", ], dependencies=[Depends(HTTPBe
 
 @router.get("/me", tags=[settings.ACCESS_TYPE.access])
 async def get_user_meta(
-        uuid: uuid_type = Depends(auth_utils.uuid_dep, ),
+        uuid: str = Depends(auth_utils.uuid_dep, ),
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> OutUserSch:
     user = await get_user(session, uuid=uuid)
@@ -55,8 +55,8 @@ async def login(
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> TokenInfo:
     user_db: ORMUserSch = await get_user(session, email=user.email)
-
-    if user_db and auth_utils.match_pwd(user.pwd, user_db.pwd_hash):
+    is_match_pwd = auth_utils.match_pwd(user.pwd, user_db.pwd_hash)
+    if user_db and is_match_pwd:
         return TokenInfo(
             access_token=auth_utils.create_access_tocken(
                 jwt_payload={
@@ -69,12 +69,12 @@ async def login(
                 jwt_payload={"sub": str(user_db.uuid)})
         )
     else:
-        return HTTPException(status_code=400, detail="invalid email or password")
+        raise HTTPException(status_code=400, detail="invalid email or password")
 
 
 @router.get("/refresh", response_model=TokenInfo, response_model_exclude_none=True, tags=[settings.ACCESS_TYPE.refresh])
 async def refresh(
-        uuid: uuid_type = Depends(auth_utils.uuid_dep),
+        uuid: str = Depends(auth_utils.uuid_dep),
         session: AsyncSession = Depends(db_helper.get_async_session)
 ) -> TokenInfo:
     user_db: ORMUserSch = await get_user(session, uuid=uuid)

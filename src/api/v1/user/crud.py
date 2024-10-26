@@ -1,6 +1,5 @@
 from sqlalchemy import Result, select, insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from uuid import UUID as uuid_type
 from fastapi import HTTPException
 
 from src.core.database import User
@@ -12,7 +11,7 @@ from src.api.v1.schemas.utils import to_pydantic
 async def get_user(
         session: AsyncSession,
         email: str | None = None,
-        uuid: uuid_type | None = None,
+        uuid: str | None = None,
 ) -> ORMUserSch | None:
     stmt = select(User)
     if email:
@@ -36,8 +35,10 @@ async def create_user(
     exists_user = await get_user(session=session, email=user.email)
     if exists_user:
         raise HTTPException(400, detail="User with this email exists")
-    stmt = insert(User).values(email=user.email, pwd_hash=auth_utils.hash_pwd(user.pwd)).returning(User)
-    result = await session.execute(stmt)
-    user = result.scalar()
+    insert_stmt = insert(User).values(email=user.email, pwd_hash=auth_utils.hash_pwd(user.pwd))
+    insert_result = await session.execute(insert_stmt)
+    select_stmt = select(User).where(User.email == user.email)
+    select_result = await session.execute(select_stmt)
+    user = select_result.scalar()
     await session.commit()
     return to_pydantic(user, OutUserSch)

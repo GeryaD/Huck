@@ -38,6 +38,7 @@ pass_uri = {
     settings.ACCESS_TYPE.neutral: (),
     settings.ACCESS_TYPE.refresh: (),
 }
+
 for route in app.router.__dict__["routes"]:
     if hasattr(route, "tags"):
         pass_uri[route.__dict__["tags"][-1]] += (route.__dict__["path"],)

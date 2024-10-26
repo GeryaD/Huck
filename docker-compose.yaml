@@ -6,11 +6,11 @@ services:
     build: .
     ports:
       - "8888:8000"
-    command: bash -c "alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --reload"
+    command: bash -c "sleep 2 && alembic upgrade head && uvicorn src.main:app --host 0.0.0.0 --reload"
     env_file:
       - .env
     depends_on:
-      - db
+      - myadmin
 
   db:
     image: mysql:8.4
@@ -36,7 +36,9 @@ services:
     env_file:
       - .env
     environment:
-      PMA_HOST: localhost
+      PMA_HOST: db
+      PMA_USER: huckparseruser
+      PMA_PASSWORD: QQqq11!!
 
   redis:
     image: redis:7
