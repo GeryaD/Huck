@@ -21,7 +21,7 @@ async def create_history(
     )
     await session.execute(insert_stmt)
     await session.commit()
-    select_stmt = select(RequestHistory).where(RequestHistory.uuid_user == uuid).order_by(RequestHistory.id).limit(1)
+    select_stmt = select(RequestHistory).where(RequestHistory.uuid_user == uuid).order_by(RequestHistory.id.desc()).limit(1)
     result: Result = await session.execute(select_stmt)
     req_history = result.scalar()
     if req_history:
@@ -38,7 +38,7 @@ async def get_history_by_id(
         session: AsyncSession,
 ) -> OutReqHistory | None:
     select_stmt = select(RequestHistory).where(RequestHistory.uuid_user == uuid, RequestHistory.id == id).order_by(
-        RequestHistory.id)
+        RequestHistory.id.desc())
     result: Result = await session.execute(select_stmt)
     req_history = result.scalar()
     if req_history:
@@ -51,7 +51,7 @@ async def get_history_all(
         uuid: str,
         session: AsyncSession,
 ) -> list[OutReqHistory] | None:
-    select_stmt = select(RequestHistory).where(RequestHistory.uuid_user == uuid).order_by(RequestHistory.id)
+    select_stmt = select(RequestHistory).where(RequestHistory.uuid_user == uuid).order_by(RequestHistory.id.desc())
     result: Result = await session.execute(select_stmt)
     req_historys = result.scalars().all()
     if req_historys:
